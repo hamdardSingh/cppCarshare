@@ -24,6 +24,9 @@ class Server{
   public:string signUp(std::string username,std::string password,std::string confirmPassword);
   public:string addCar();
   public:string showMyCars(std::string username);
+  public:string showAvailableCars(std::string);
+  public:string bookCar();
+  public:string showBookedCars(std::string username);
 };
 
 void Server::connect(){
@@ -67,6 +70,21 @@ void Server::connect(){
         socket.send_to(boost::asio::buffer(response),remote_endpoint,0,ignored_error);
         break;
       }
+      case 5:{ //Show Available Cars to user for Rent
+        std::string response = showAvailableCars(receivedData["username"]);
+        socket.send_to(boost::asio::buffer(response),remote_endpoint,0,ignored_error);
+        break;
+      }
+      case 6:{ //Book car on user request
+        std::string response = bookCar();
+        socket.send_to(boost::asio::buffer(response),remote_endpoint,0,ignored_error);
+        break;
+      }
+      case 7:{ //Show cars that user have booked
+        std::string response = showBookedCars(receivedData["username"]);
+        socket.send_to(boost::asio::buffer(response),remote_endpoint,0,ignored_error);
+        break;
+      }
       default:
         break;
     }
@@ -101,7 +119,8 @@ string Server::addCar(){
       {"carFuel",receivedData["carFule"]},
       {"carExtra",receivedData["carExtra"]},
       {"carLocation",receivedData["carLocation"]},
-      {"status","1"}
+      {"status","1"},
+      {"bookedUser",""}
     };
     std::cout << carsDb.size() << '\n';
     return "1";
@@ -117,5 +136,48 @@ string Server::showMyCars(std::string username){
   std::stringstream ss;
   boost::archive::text_oarchive oarch(ss);
   oarch << Lmap;
+  return ss.str();
+}
+
+//Show Available Cars to user for Rent
+string Server::showAvailableCars(std::string username){
+  std::map<int, std::map<string, string>> Acars; // New empty map for cars with status 1
+  for (std::map<std::string,std::map<string, string>>::iterator it=carsDb.begin(); it!=carsDb.end(); ++it){
+    int i = 1;
+    if(it->second["status"] == "1" && it->second["username"] != username){
+      Acars[i] = it->second;
+      i++;
+    }
+  }
+  std::stringstream ss;
+  boost::archive::text_oarchive oarch(ss);
+  oarch << Acars;
+  return ss.str();
+}
+
+//Book car on user request
+string Server::bookCar(){
+  auto car = carsDb.find(receivedData["bookedCarName"]);
+  if(car != carsDb.end()){
+    car->second["status"] = "0";
+    car->second["bookedUser"] = receivedData["username"];
+  }
+
+  return "1";
+}
+
+//Show cars that user have booked
+string Server::showBookedCars(std::string username){
+  std::map<int, std::map<string, string>> Bcars; // New empty map for cars with status 0
+  for (std::map<std::string,std::map<string, string>>::iterator it=carsDb.begin(); it!=carsDb.end(); ++it){
+    int i = 1;
+    if(it->second["status"] == "0" && it->second["bookedUser"] == username){
+      Bcars[i] = it->second;
+      i++;
+    }
+  }
+  std::stringstream ss;
+  boost::archive::text_oarchive oarch(ss);
+  oarch << Bcars;
   return ss.str();
 }
