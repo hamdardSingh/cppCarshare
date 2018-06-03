@@ -15,7 +15,7 @@ class Client{
   public:void addCar();
   public:void showMyCars();
   public:void showAvailableCars();
-  public:void showCarInfo(std::map<string, string>);
+  public:void showCarInfo(std::map<string, string>,std::string);
   public:void showBookedCars();
 };
 
@@ -154,11 +154,11 @@ void Client::showMyCars(){
     for (std::map<std::string,std::map<string, string>>::iterator it=myCars.begin(); it!=myCars.end(); ++it){
       std::cout << it->second["carName"] << '\n';
     }
-    std::cout << "ENTER 9 TO GO BACK: ";
+    std::cout << "ENTER B TO GO BACK: ";
 
     choice = getInput();
 
-  }while(choice != '9');
+  }while(choice != 'B');
 }
 
 void Client::showAvailableCars(){
@@ -185,7 +185,7 @@ void Client::showAvailableCars(){
       int carIndex = choice-'0';
       auto car = ACars.find(carIndex);
       if(car != ACars.end()){
-        showCarInfo(car->second);
+        showCarInfo(car->second,"confirm");
       }else{
         std::cout << "Invalid selection!!" << '\n';
         choice = getInput();
@@ -197,7 +197,7 @@ void Client::showAvailableCars(){
   }while(choice != 'B');
 }
 
-void Client::showCarInfo(std::map<string, string> carInfo){
+void Client::showCarInfo(std::map<string, string> carInfo,std::string type){
   char choice;
   do{
     system("clear");
@@ -207,11 +207,22 @@ void Client::showCarInfo(std::map<string, string> carInfo){
     std::cout << "Color: " << carInfo["carColor"] << '\t' << "Fuel Type: " << carInfo["carFuel"] << '\n';
     std::cout << "Location: " << carInfo["carLocation"] << '\n';
     std::cout << "Extra Information: " << carInfo["carExtra"] << '\n';
+    if(type == "confirm"){
+      std::cout << "Press 'B' TO GO BACK |OR| Press 'C' To Confirm Booking: ";
+    }else{
+      std::cout << "Press 'B' TO GO BACK |OR| Press 'R' To return Car: ";
+    }
 
-    std::cout << "Press 'B' TO GO BACK |OR| Press 'C' To Confirm Booking: ";
     choice = getInput();
     if(choice == 'C'){
       client["method"] = "6";
+      client["bookedCarName"] = carInfo["carName"];
+      if(Network.send(client) == "1"){
+        choice='B';
+      }
+    }
+    if(choice == 'R'){
+      client["method"] = "8";
       client["bookedCarName"] = carInfo["carName"];
       if(Network.send(client) == "1"){
         choice='B';
@@ -244,7 +255,7 @@ void Client::showBookedCars(){
       int carIndex = choice-'0';
       auto car = BCars.find(carIndex);
       if(car != BCars.end()){
-        showCarInfo(car->second);
+        showCarInfo(car->second,"return");
       }else{
         std::cout << "Invalid selection!!" << '\n';
         choice = getInput();

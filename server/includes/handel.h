@@ -27,6 +27,7 @@ class Server{
   public:string showAvailableCars(std::string);
   public:string bookCar();
   public:string showBookedCars(std::string username);
+  public:string returnCar();
 };
 
 void Server::connect(){
@@ -82,6 +83,11 @@ void Server::connect(){
       }
       case 7:{ //Show cars that user have booked
         std::string response = showBookedCars(receivedData["username"]);
+        socket.send_to(boost::asio::buffer(response),remote_endpoint,0,ignored_error);
+        break;
+      }
+      case 8:{ //Return Car
+        std::string response = returnCar();
         socket.send_to(boost::asio::buffer(response),remote_endpoint,0,ignored_error);
         break;
       }
@@ -161,6 +167,17 @@ string Server::bookCar(){
   if(car != carsDb.end()){
     car->second["status"] = "0";
     car->second["bookedUser"] = receivedData["username"];
+  }
+
+  return "1";
+}
+
+//Return Car
+string Server::returnCar(){
+  auto car = carsDb.find(receivedData["bookedCarName"]);
+  if(car != carsDb.end()){
+    car->second["status"] = "1";
+    car->second["bookedUser"] = "";
   }
 
   return "1";
