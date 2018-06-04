@@ -16,7 +16,7 @@ class Server{
     std::string password;
   };
 
-  private: std::map<std::string,std::string> receivedData;
+  public: std::map<std::string,std::string> receivedData;
   private: std::map<std::string, users> userDb;
   private: std::map<std::string, std::map<std::string, std::string>> carsDb;
   public:void connect();
@@ -128,7 +128,7 @@ string Server::addCar(){
       {"status","1"},
       {"bookedUser",""}
     };
-    std::cout << carsDb.size() << '\n';
+
     return "1";
 }
 //Method for show cars that user owns
@@ -167,9 +167,10 @@ string Server::bookCar(){
   if(car != carsDb.end()){
     car->second["status"] = "0";
     car->second["bookedUser"] = receivedData["username"];
+    return "1";
+  }else{
+    return "0";
   }
-
-  return "1";
 }
 
 //Return Car
@@ -178,9 +179,10 @@ string Server::returnCar(){
   if(car != carsDb.end()){
     car->second["status"] = "1";
     car->second["bookedUser"] = "";
+    return "1";
+  }else{
+    return "0";
   }
-
-  return "1";
 }
 
 //Show cars that user have booked
