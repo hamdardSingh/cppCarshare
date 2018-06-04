@@ -1,5 +1,7 @@
 # CAR SHARING C++
 Car rental project
-##INSTALLATION
+
+## INSTALLATION
+
 cmake .
 make && make test
