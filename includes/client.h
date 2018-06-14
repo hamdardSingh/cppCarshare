@@ -18,13 +18,13 @@ class Client{
   public:void showCarInfo(std::map<string, string>,std::string);
   public:void showBookedCars();
 };
-
+//Common method to get input from user
 int Client::getInput(){
   char choice;
   std::cin >> choice;
   return choice;
 }
-
+//Start Menu
 void Client::start(){
   cout << "Please make your selection\n";
   cout << "1 - Login\n";
@@ -32,7 +32,7 @@ void Client::start(){
   cout << "3 - Quit\n";
   cout << "Selection: ";
 }
-
+//Client login method
 int Client::login(std::string message){
   system("clear");
   client["method"] = "1";
@@ -52,7 +52,7 @@ int Client::login(std::string message){
 
   return 0;
 }
-
+//Client signUp method
 int Client::signUp(std::string message){
   system("clear");
   std::cout << "\e[1m" << "------> Register New User <------" << "\e[0m" <<'\n';
@@ -75,7 +75,7 @@ int Client::signUp(std::string message){
   }
   return 0;
 }
-
+//Method to show menu after login
 void Client::showMenu(std::string message){
   int choice = 0;
   do{
@@ -112,7 +112,7 @@ void Client::showMenu(std::string message){
   }while(choice != '5');
 
 }
-
+//Client Method to add new car to pool
 void Client::addCar(){
   std::cout << "\e[1m" << "------> Add new car to pool <------" << "\e[0m" << '\n';
   client["method"] = "3";
@@ -136,7 +136,7 @@ void Client::addCar(){
     showMenu("New car successfully added!!");
   }
 }
-
+//Client method to display client's own cars
 void Client::showMyCars(){
 
   client["method"] = "4";
@@ -160,7 +160,7 @@ void Client::showMyCars(){
 
   }while(choice != 'B');
 }
-
+//Client method to list all cars that are available for rent
 void Client::showAvailableCars(){
 
   client["method"] = "5";
@@ -196,7 +196,7 @@ void Client::showAvailableCars(){
 
   }while(choice != 'B');
 }
-
+//Diplays detailed car information
 void Client::showCarInfo(std::map<string, string> carInfo,std::string type){
   char choice;
   do{
@@ -231,6 +231,7 @@ void Client::showCarInfo(std::map<string, string> carInfo,std::string type){
   }while(choice != 'B');
 }
 
+//Client method that show user car that user currently have rented
 void Client::showBookedCars(){
 
   client["method"] = "7";

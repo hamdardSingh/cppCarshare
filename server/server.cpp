@@ -1,3 +1,4 @@
+//server entry point
 #include "includes/handel.h"
 
 int main(){

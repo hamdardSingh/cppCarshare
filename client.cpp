@@ -1,3 +1,4 @@
+//client entry point
 #include "includes/client.h"
 int main(){
   Client c;
